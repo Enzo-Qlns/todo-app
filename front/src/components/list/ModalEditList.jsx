@@ -5,32 +5,36 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import BasicSpeedDial from '../common/SpeedDial';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Box, Button, DialogContent, TextField } from '@mui/material';
+import Utils from '../../utils/Utils';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function ModalEditList({ title, detail, open, onOpen, onClose, onSubmit }) {
-    const [value, setValue] = useState({ title: title, detail: detail });
+export default function ModalEditList({ open, title, detail, onClose, onSubmit }) {
+    const [titleValue, setTitleValue] = useState(title);
+    const [detailValue, setDetailValue] = useState(detail);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
         onSubmit(data.get('title'), data.get('detail'));
+    };
+
+    const close = () => {
+        onClose();
+        setTitleValue('');
+        setDetailValue('');
     }
 
     return (
-        <React.Fragment>
-            <IconButton disableRipple onClick={onOpen}>
-                <EditOutlinedIcon sx={{ color: 'var(--purple)' }} />
-            </IconButton>
+        <>
             <Dialog
                 fullScreen
                 open={open}
-                onClose={onClose}
+                onClose={close}
                 TransitionComponent={Transition}
             >
                 <AppBar sx={{ position: 'relative', bgcolor: 'var(--purple)' }} >
@@ -38,7 +42,7 @@ export default function ModalEditList({ title, detail, open, onOpen, onClose, on
                         <IconButton
                             edge="start"
                             color="inherit"
-                            onClick={onClose}
+                            onClick={close}
                             aria-label="close"
                         >
                             <CloseIcon />
@@ -58,8 +62,8 @@ export default function ModalEditList({ title, detail, open, onOpen, onClose, on
                             name='title'
                             required
                             autoComplete='off'
-                            value={value.title}
-                            onChange={(e) => setValue({ ...value, title: e.target.value })}
+                            value={Utils.isEmpty(titleValue) ? title : titleValue}
+                            onChange={(e) => setTitleValue(e.target.value)}
                         />
                         <TextField
                             margin="dense"
@@ -71,13 +75,13 @@ export default function ModalEditList({ title, detail, open, onOpen, onClose, on
                             name='detail'
                             required
                             autoComplete='off'
-                            value={value.detail}
-                            onChange={(e) => setValue({ ...value, detail: e.target.value })}
+                            value={Utils.isEmpty(detailValue) ? detail : detailValue}
+                            onChange={(e) => setDetailValue(e.target.value)}
                         />
                         <Button type='submit' variant='contained' fullWidth sx={{ mt: 2, bgcolor: 'var(--purple)', "&:hover": { bgcolor: 'var(--purple)' } }}>Ajouter</Button>
                     </Box>
                 </DialogContent>
             </Dialog>
-        </React.Fragment>
+        </>
     );
 }

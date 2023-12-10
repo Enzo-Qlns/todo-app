@@ -19,12 +19,14 @@ export default function Home({
     addList,
     deleteList,
     patchDoneList,
+    updateList,
 }) {
     const [initialRequestAs200, setinitialRequestAs200] = useState(false);
     const [lists, setLists] = useState(null);
     const [openModalAddList, setOpenModalAddList] = useState(false);
     const [openModalEditList, setOpenModalEditList] = useState(false);
     const [toggleValue, setToggleValue] = useState(0);
+    const [selectedValueToEditList, setSelectedValueToEditList] = useState('');
 
     const fetchList = useCallback(() => {
         setinitialRequestAs200(false);
@@ -66,6 +68,15 @@ export default function Home({
         if (!Utils.isEmpty(patchDoneList)) {
             patchDoneList(listId, done, () => {
                 fetchList();
+            });
+        };
+    };
+
+    const fetchUpdateList = (listId, title, detail) => {
+        if (!Utils.isEmpty(updateList)) {
+            updateList(listId, title, detail, () => {
+                fetchList();
+                setOpenModalEditList(false);
             });
         };
     };
@@ -127,16 +138,15 @@ export default function Home({
                                         <Typography color={'black'} variant='subtitle1'>{elt.detail}</Typography>
                                     </div>
                                     <div>
-                                        <ModalEditList
-                                            open={openModalEditList}
-                                            onOpen={() => setOpenModalEditList(true)}
-                                            onClose={() => setOpenModalEditList(false)}
-                                            title={elt.title}
-                                            detail={elt.detail}
-                                            onSubmit={(title, detail) => {
-                                                console.log(title, detail)
+                                        <IconButton
+                                            disableRipple
+                                            onClick={() => {
+                                                setOpenModalEditList(true);
+                                                setSelectedValueToEditList(elt);
                                             }}
-                                        />
+                                        >
+                                            <EditOutlinedIcon sx={{ color: 'var(--purple)' }} />
+                                        </IconButton>
                                         <IconButton disableRipple onClick={(id) => fetchDeleteList(elt.id)}>
                                             <DeleteOutlineOutlinedIcon sx={{ color: 'var(--purple)' }} />
                                         </IconButton>
@@ -171,6 +181,7 @@ export default function Home({
                     <Tab disableRipple icon={<DoneOutlinedIcon />} />
                 </Tabs>
             </div>
+
             <ModalAddList
                 onSubmit={(title, detail) => {
                     fetchAddList(title, detail, new Date());
@@ -178,6 +189,17 @@ export default function Home({
                 open={openModalAddList}
                 onOpen={() => setOpenModalAddList(true)}
                 onClose={() => setOpenModalAddList(false)}
+            />
+
+            <ModalEditList
+                open={openModalEditList}
+                selectedValueToEditList={selectedValueToEditList}
+                title={selectedValueToEditList.title}
+                detail={selectedValueToEditList.detail}
+                onClose={() => setOpenModalEditList(false)}
+                onSubmit={(title, detail) => {
+                    fetchUpdateList(selectedValueToEditList.id, title, detail);
+                }}
             />
         </Container>
     );

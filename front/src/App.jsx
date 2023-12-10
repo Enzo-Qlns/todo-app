@@ -81,6 +81,20 @@ export default function App() {
     });
   };
 
+  const update_list = (listId, title, detail, funcAs200, funcAsErr) => {
+    Http.request_update_list(listId, title, detail, (statusCode, jsonBody) => {
+      if (200 === statusCode || 201 === statusCode) {
+        if (!Utils.isEmpty(funcAs200)) {
+          funcAs200(jsonBody);
+        };
+      } else {
+        if (!Utils.isEmpty(funcAsErr)) {
+          funcAsErr(statusCode, jsonBody);
+        };
+      };
+    });
+  };
+
   return (
     <BrowserRouter>
       <Routes>
@@ -93,6 +107,7 @@ export default function App() {
               addList={add_list}
               deleteList={delete_list}
               patchDoneList={patch_done_list}
+              updateList={update_list}
             />
           }
         />

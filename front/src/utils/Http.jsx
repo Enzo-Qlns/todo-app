@@ -74,7 +74,7 @@ const Http = {
         return this.call(Vars.getHost() + '/lists/' + listId, options, onResponse);
     },
 
-    request_update_list(title, detail, onResponse = undefined) {
+    request_update_list(listId, title, detail, onResponse = undefined) {
         const options = this.defaultOptions();
         options.method = 'PATCH';
         options.body = JSON.stringify({ "title": title, "detail": detail, "updatedAt": new Date() });
