@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
+import { useLocation, useNavigate } from "react-router-dom";
 import Container from '@mui/material/Container';
-import { IconButton, Tab, Tabs, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { IconButton, Tab, Tabs, Typography } from '@mui/material';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -26,23 +27,26 @@ export default function Home({
     const [openModalAddList, setOpenModalAddList] = useState(false);
     const [openModalEditList, setOpenModalEditList] = useState(false);
     const [toggleValue, setToggleValue] = useState(0);
-    const [selectedValueToEditList, setSelectedValueToEditList] = useState('');
+    const [selectedListToEdit, setSelectedListToEdit] = useState('');
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const fetchList = useCallback(() => {
         setinitialRequestAs200(false);
         if (!Utils.isEmpty(getList)) {
             getList((res) => {
                 setLists(res.reverse());
-                setToggleValue(0);
                 setinitialRequestAs200(true);
             });
         };
     }, [getList]);
 
     const fetchGetDoneList = () => {
+        setinitialRequestAs200(false);
         if (!Utils.isEmpty(getDoneList)) {
             getDoneList((res) => {
                 setLists(res.reverse());
+                setinitialRequestAs200(true);
             });
         };
     };
@@ -82,8 +86,29 @@ export default function Home({
     };
 
     useEffect(() => {
-        fetchList();
-    }, [fetchList]);
+        const searchValue = new URLSearchParams(location.search).get('filter');
+        if (!Utils.isEmpty(searchValue)) {
+            // vérifie si le filtre est present
+            if (searchValue !== "all" && searchValue !== "checked") {
+                setToggleValue(0);
+                fetchList();
+            }
+            // si correcte change le filtre en fonction de
+            else {
+                if (searchValue === "all") {
+                    setToggleValue(0);
+                    fetchList();
+                } else if (searchValue === "checked") {
+                    setToggleValue(1);
+                    fetchGetDoneList();
+                };
+            };
+        }
+        // si aucun filtre alors call initial all list
+        else {
+            fetchList();
+        };
+    }, [location]);
 
     return (
         <Container maxWidth="sm">
@@ -142,7 +167,7 @@ export default function Home({
                                             disableRipple
                                             onClick={() => {
                                                 setOpenModalEditList(true);
-                                                setSelectedValueToEditList(elt);
+                                                setSelectedListToEdit(elt);
                                             }}
                                         >
                                             <EditOutlinedIcon sx={{ color: 'var(--purple)' }} />
@@ -171,10 +196,13 @@ export default function Home({
                     value={toggleValue}
                     onChange={(_, value) => {
                         setToggleValue(value);
-                        if (value === 1)
+                        if (value === 1) {
                             fetchGetDoneList();
-                        else
+                            navigate("/?filter=checked");
+                        } else {
                             fetchList();
+                            navigate("/?filter=all");
+                        };
                     }}
                 >
                     <Tab disableRipple icon={<FormatListBulletedOutlinedIcon />} />
@@ -193,12 +221,12 @@ export default function Home({
 
             <ModalEditList
                 open={openModalEditList}
-                selectedValueToEditList={selectedValueToEditList}
-                title={selectedValueToEditList.title}
-                detail={selectedValueToEditList.detail}
+                selectedListToEdit={selectedListToEdit}
+                title={selectedListToEdit.title}
+                detail={selectedListToEdit.detail}
                 onClose={() => setOpenModalEditList(false)}
                 onSubmit={(title, detail) => {
-                    fetchUpdateList(selectedValueToEditList.id, title, detail);
+                    fetchUpdateList(selectedListToEdit.id, title, detail);
                 }}
             />
         </Container>
