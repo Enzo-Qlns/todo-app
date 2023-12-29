@@ -9,8 +9,8 @@ RUN apt install tzdata
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Ajoute les differents fichier de conf
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY site.conf /etc/nginx/sites-available
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/site.conf /etc/nginx/sites-available
 RUN ln -s /etc/nginx/sites-available/site.conf /etc/nginx/sites-enabled/
 
 # Ajoute le bulid

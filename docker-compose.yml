@@ -7,8 +7,8 @@ services:
     image: nginx-react-todo-app:latest
     restart: always
     build:
-      context: ./nginx
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: nginx/Dockerfile
     networks:
       - api-todo-app-network
     depends_on:
@@ -29,4 +29,4 @@ services:
           - server-todo
 
 networks:
-  api-todo-app-network
+  api-todo-app-network:
