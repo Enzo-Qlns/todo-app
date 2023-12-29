@@ -4,11 +4,7 @@ WORKDIR /usr/src/app
 
 ENV NODE_ENV production
 
-# Just copy the package.json...
-COPY package*.json ./
-
-# so we can cache this layer:
-RUN npm install
+RUN npm install -g json-server && npm i json-server
 
 COPY . .
 

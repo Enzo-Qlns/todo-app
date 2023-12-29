@@ -6,6 +6,8 @@ services:
     container_name: nginx-react-todo-app
     image: nginx-react-todo-app:latest
     restart: always
+    volumes:
+      - ./api/db.json:/usr/src/app
     build:
       context: .
       dockerfile: nginx/Dockerfile
