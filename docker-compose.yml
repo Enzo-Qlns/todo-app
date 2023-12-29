@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+
+  nginx:
+    container_name: nginx-react-todo-app
+    image: nginx-react-todo-app:latest
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    networks:
+      - api-todo-app-network
+    depends_on:
+      - api
+    ports:
+      - 8086:8086
+
+  api:
+    container_name: api-react-todo-app
+    image: api-react-todo-app:latest
+    restart: always
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    networks:
+      api-todo-app-network:
+        aliases:
+          - server-todo
+
+networks:
+  api-todo-app-network
