@@ -35,7 +35,7 @@ export default function Home({
         setinitialRequestAs200(false);
         if (!Utils.isEmpty(getList)) {
             getList((res) => {
-                setLists(res.reverse());
+                setLists(res.reverse().filter(elt => !elt.done));
                 setinitialRequestAs200(true);
             });
         };
