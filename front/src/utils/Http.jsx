@@ -46,7 +46,7 @@ const Http = {
 
     request_get_list(onResponse = undefined) {
         const options = this.defaultOptions();
-        return this.call(Vars.getHost() + '/lists/', options, onResponse);
+        return this.call(Vars.getHost() + '/lists', options, onResponse);
     },
 
     request_get_done_list(onResponse = undefined) {
