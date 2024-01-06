@@ -6,8 +6,6 @@ services:
     container_name: nginx-react-todo-app
     image: nginx-react-todo-app:latest
     restart: always
-    volumes:
-      - ./api/db.json:/usr/src/app
     build:
       context: .
       dockerfile: nginx/Dockerfile
@@ -22,6 +20,7 @@ services:
     container_name: api-react-todo-app
     image: api-react-todo-app:latest
     restart: always
+    command: json-server --watch db.json --port 8000 --host 0.0.0.0
     build:
       context: ./api
       dockerfile: Dockerfile
@@ -29,6 +28,9 @@ services:
       api-todo-app-network:
         aliases:
           - server-todo
+    volumes:
+      - ./api/:/usr/src/app/
 
 networks:
   api-todo-app-network:
+
